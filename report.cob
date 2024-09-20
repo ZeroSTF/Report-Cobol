@@ -1,0 +1,63 @@
+IDENTIFICATION DIVISION.
+       PROGRAM-ID. EMPLOYEE-REPORT.
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT EMPLOYEE-FILE ASSIGN TO "EMPLOYEE.DAT"
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT REPORT-FILE ASSIGN TO "REPORT.OUT"
+               ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD EMPLOYEE-FILE.
+       01 EMPLOYEE-RECORD.
+           05 EMP-ID              PIC 9(5).
+           05 EMP-NAME            PIC X(30).
+           05 EMP-POSITION        PIC X(20).
+           05 EMP-SALARY          PIC 9(7)V99.
+
+       FD REPORT-FILE.
+       01 REPORT-LINE             PIC X(80).
+
+       WORKING-STORAGE SECTION.
+       01 WS-EOF                  PIC X VALUE 'N'.
+       01 WS-TOTAL-SALARY         PIC 9(9)V99 VALUE 0.
+       01 WS-EMPLOYEE-COUNT       PIC 9(5) VALUE 0.
+
+       PROCEDURE DIVISION.
+       MAIN-PROCEDURE.
+           PERFORM OPEN-FILES
+           PERFORM PROCESS-RECORDS UNTIL WS-EOF = 'Y'
+           PERFORM WRITE-REPORT
+           PERFORM CLOSE-FILES
+           STOP RUN.
+
+       OPEN-FILES.
+           OPEN INPUT EMPLOYEE-FILE
+           OPEN OUTPUT REPORT-FILE.
+
+       PROCESS-RECORDS.
+           READ EMPLOYEE-FILE
+               AT END
+                   MOVE 'Y' TO WS-EOF
+               NOT AT END
+                   PERFORM CALCULATE-TOTALS.
+
+       CALCULATE-TOTALS.
+           ADD 1 TO WS-EMPLOYEE-COUNT
+           ADD EMP-SALARY TO WS-TOTAL-SALARY.
+
+       WRITE-REPORT.
+           MOVE SPACES TO REPORT-LINE
+           STRING "Total Employees: " WS-EMPLOYEE-COUNT
+               DELIMITED BY SIZE INTO REPORT-LINE
+           WRITE REPORT-LINE
+           MOVE SPACES TO REPORT-LINE
+           STRING "Total Salary: $" WS-TOTAL-SALARY
+               DELIMITED BY SIZE INTO REPORT-LINE
+           WRITE REPORT-LINE.
+
+       CLOSE-FILES.
+           CLOSE EMPLOYEE-FILE
+           CLOSE REPORT-FILE.
