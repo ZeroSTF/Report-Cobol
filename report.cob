@@ -288,7 +288,7 @@ WRITE-DEPARTMENT-SUMMARY.
             STRING WS-DEPT-NAME(WS-DEPT-IDX) ": " 
                 WS-DEPT-COUNT(WS-DEPT-IDX) " employees, Total Salary: $"
                 WS-DEPT-SALARY(WS-DEPT-IDX)
-                ", Percentage of Total Salary: "
+                ", Percentage of total salary: "
                 FUNCTION TRIM(FUNCTION REM(
                     (WS-DEPT-SALARY(WS-DEPT-IDX) / WS-TOTAL-SALARY * 100), 0.01
                 ))
